@@ -3,6 +3,7 @@
 PHONY: build-test-image
 build-test-image:
 	docker pull python:3.12
+
 	docker build -t db-delta-test -f Dockerfile.test .
 
 PHONY: run-test-image
@@ -12,6 +13,7 @@ run-test-image: build-test-image
 PHONY: build-artifact
 build-artifact: run-test-image
 	docker pull python:3.12
+
 	docker build \
 		-t db-delta-build \
 		-f Dockerfile.build \
