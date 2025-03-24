@@ -1,15 +1,9 @@
 FROM python:3.12
 
-ENV TWINE_USERNAME=__token__
-ENV TWINE_PASSWORD=secret
-
-# install dependencies to build project
+RUN apt-get update && apt-get install -y git build-essential
 RUN pip install -U pip && pip install setuptools build wheel twine
 
-COPY ./src ./src
-COPY pyproject.toml ./
-
-COPY ./build.sh ./
+COPY . .
 RUN chmod +x ./build.sh
 
 CMD ["./build.sh"]
