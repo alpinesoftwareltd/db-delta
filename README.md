@@ -1,3 +1,5 @@
+# DB Delta
+
 `db-delta` is a Python testing utility package designed to be used alongside `moto` that evaluates and validates database changesets in test that executes AWS DynamoDB operations to ensure that only the changes that you defined are executed against your database, no more and no less.
 
 Usage is simple.
@@ -43,7 +45,7 @@ def test_function_foo(table):
         execute_function(table, "foo", "bar")
 ```
 
-`db_delta` will scan your DynamoDB table instance before and after the execution of your function. It will then verify that only the changes defined in the changeset have been executed. If any of the specified changes are not found, or if any changes have been made that are not defined in the changeset, an exception is raised.
+`db_delta` will scan your DynamoDB table before and after the execution of your code. It will then verify that only the changes defined in the changeset have been executed. If any of the specified changes are not found, or if any changes have been made that are not defined in the changeset, an `AssertionException` is raised.
 
 ### Why use `db_delta`?
 
@@ -99,9 +101,9 @@ There are two issues with the above.
 1. Tests like the above quickly become extremely repetitive, with a great deal of duplicated code to read from your database and compare values.
 2. The test only checks if one field in one item has been updated as expected. Every other item from the database could have been deleted and the test would still pass.
 
-The second point critical and can lead to serious issues in your data. While the above example is trivial, real life codebases generally have more complex functions that execute multiple database operations in multiple functions, and it quickly becomes difficult to test everything without writing long unittests that check for every possible outcome.
+The second point is critical and can lead to serious issues in your data. While the above example is trivial, real life codebases generally have more complex functions that execute multiple database operations in multiple places, and it quickly becomes difficult to test everything without writing long unittests that check for every possible outcome.
 
-This is where `db_delta` comes in. Because it scans your table before and after the function you are testing is executed, it generates a complete picture of the changes made to your database as the result of the function execution. It can then compare the initial and final state of your table to make sure that only the changes you expect have actually been executed.
+This is where `db_delta` comes in. Because it scans your table before and after the function you are testing is executed, it generates a complete picture of the changes made to your database as the result of running the code you are testing. It can then compare the initial and final state of your table to make sure that only the changes you expect have actually been executed.
 
 It also neatens up the code. With `db_delta`, the above test now becomes
 
@@ -158,11 +160,11 @@ The only two components required to use `db_delta` is the `ChangeSet` object and
 
 The `ChangeSet` object is a `pydantic` data model that contains the database changes that you expect your function to produce. There are three types of changes that you can provide in a changeset.
 
-* `PutItem` - represents a new item created using `put_item`.
-* `UpdatedItem` - represents an update to an existing item using `update_item`.
-* `DeletedItem`- represents an item deleted using `delete_item`.
+* `PutItem` - represents a new item created using `dynamodb:PutItem`.
+* `UpdatedItem` - represents an update to an existing item using `dynamodb:UpdateItem`.
+* `DeletedItem`- represents an item deleted using `dynamodb:DeleteItem`.
 
-Changes are provided as an array of objects collectively referred to as a changeset. Each update type has its own format, and the structure of each is documented below.
+Expected updates are provided as an array of objects collectively referred to as a changeset. Each update type has its own format, and the structure of each is documented below.
 
 <details>
 <summary>
@@ -315,9 +317,7 @@ table = boto3.resource("dynamodb").Table("example-table")
 
 ### Test Setup
 
-In order to get the most out of `db_delta` its critical that you set up your unittests correctly. `db_delta` is designed to be used alongside `moto` and `pytest`. We strongly recommend that you get familiar with both before integration `db_delta` into your unittests.
-
-For a complete example, see the `examples/basic` folder in this repository, which shows you how to configure a basic testing environment with the required tools.
+In order to get the most out of `db_delta` its critical that you set up your unittests correctly. `db_delta` is designed to be used alongside `moto` and `pytest`. We strongly recommend that you get familiar with both before integration `db_delta` into your unittests. For a complete example, see the `examples/basic` folder in this repository, which shows you how to configure a basic testing environment with the required tools.
 
 
 ### Advanced Usage
@@ -342,4 +342,4 @@ def test_function_foo(table):
         execute_function(table, "foo", "bar")
 ```
 
-The `strip_metadata` function is called on all items before any comparisons are made. In this case, both the `createdTs` and `updatedTs` timestamps are removed from any items, ensuring that your changesets do not need to include the updated values for mocked timestamps. This can help to keep the changesets as small as possible.
+The `strip_metadata` function is called on all items before any comparisons are made. In this case, both the `createdTs` and `updatedTs` timestamps are removed from any items, ensuring that your changesets do not need to include the updated values for mocked timestamps. This can help to keep the changesets compact.
