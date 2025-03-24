@@ -1,0 +1,30 @@
+# github workflow to run on semver tags
+
+name: Build Artifact
+
+env:
+  PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  test:
+    name: Unittests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+
+      - name: Run tests
+        run: make run-test-image
+        continue-on-error: false
+
+      - name: Build and upload artifact
+        run: make build-artifact
+        continue-on-error: false
