@@ -12,7 +12,7 @@ on:
 
 jobs:
   test:
-    name: Unittests
+    name: Build and upload artifact
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
