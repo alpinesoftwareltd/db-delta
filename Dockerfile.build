@@ -1,9 +1,0 @@
-FROM python:3.12
-
-RUN apt-get update && apt-get install -y git build-essential
-RUN pip install -U pip && pip install setuptools build wheel twine
-
-COPY . .
-RUN chmod +x ./build.sh
-
-CMD ["./build.sh"]
