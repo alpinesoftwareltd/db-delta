@@ -18,12 +18,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0       # fetch entire history, including tags
+          fetch-depth: 0
           fetch-tags: true
 
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
 
-      - name: Build and upload artifact
-        run: make build-artifact
+      - name: Run tests
+        run: make run-test-image
         continue-on-error: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -U pip && pip install \
+            setuptools \
+            build \
+            wheel \
+            twine
+        continue-on-error: false
+
+      - name: Build artifact
+        run: python -m build
+        continue-on-error: false
+
+      - name: Upload artifact
+        run: twine upload --repository pypi dist/*
+        continue-on-error: false
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ env.PYPI_TOKEN }}
