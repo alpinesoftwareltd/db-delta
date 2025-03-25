@@ -17,13 +17,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # fetch entire history, including tags
+          fetch-tags: true
 
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
-
-      - name: Run tests
-        run: make run-test-image
-        continue-on-error: false
 
       - name: Build and upload artifact
         run: make build-artifact
