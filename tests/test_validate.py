@@ -15,7 +15,7 @@ def test_validate_dynamodb_changeset_put_item(mock_dynamo_table):
     changeset = ChangeSet(
         changes=[
             {
-                "action": "put_item",
+                "change_type": "put_item",
                 "key": {
                     "PK": "ITEM_ID#6",
                     "SK": "ITEM#6",
@@ -48,7 +48,7 @@ def test_validate_dynamodb_changeset_put_item_failed(mock_dynamo_table):
     changeset = ChangeSet(
         changes=[
             {
-                "action": "put_item",
+                "change_type": "put_item",
                 "key": {
                     "PK": "ITEM_ID#6",
                     "SK": "ITEM#6",
@@ -87,7 +87,7 @@ def test_validate_dynamodb_changeset_updated_item(mock_dynamo_table):
     changeset = ChangeSet(
         changes=[
             {
-                "action": "update_item",
+                "change_type": "updated_item",
                 "key": {
                     "PK": "ITEM_ID#1",
                     "SK": "ITEM#1",
@@ -125,7 +125,7 @@ def test_validate_dynamodb_changeset_updated_item_failed(mock_dynamo_table):
     changeset = ChangeSet(
         changes=[
             {
-                "action": "update_item",
+                "change_type": "updated_item",
                 "key": {
                     "PK": "ITEM_ID#1",
                     "SK": "ITEM#1",
@@ -171,7 +171,7 @@ def test_validate_dynamodb_changeset_deleted_item(mock_dynamo_table):
     changeset = ChangeSet(
         changes=[
             {
-                "action": "delete_item",
+                "change_type": "deleted_item",
                 "key": {
                     "PK": "ITEM_ID#1",
                     "SK": "ITEM#1",
@@ -194,7 +194,7 @@ def test_validate_dynamodb_changeset_deleted_item_failed(mock_dynamo_table):
     changeset = ChangeSet(
         changes=[
             {
-                "action": "delete_item",
+                "change_type": "deleted_item",
                 "key": {
                     "PK": "ITEM_ID#1",
                     "SK": "ITEM#1",
