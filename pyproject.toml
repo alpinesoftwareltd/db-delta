@@ -5,6 +5,11 @@ readme = "README.md"
 
 dynamic = ["version"]
 
+# add project url
+Repository = "https://github.com/alpinesoftwareltd/db-delta.git"
+Homepage = "https://github.com/alpinesoftwareltd/db-delta"
+Documentation = "https://github.com/alpinesoftwareltd/db-delta/blob/main/README.md"
+
 authors = [
     { name = "Pascal Sauerborn", email = "pascal.sauerborn@gmail.com" }
 ]

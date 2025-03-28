@@ -81,18 +81,18 @@ def validate_put_item(
     key_hash = hash_key(change.key)
 
     assert (
-        key_hash in updated_state
-    ), f"NewItem validation: Key {change.key} not found in updated table."
-
-    assert (
         key_hash not in initial_state
     ), f"NewItem validation: Key {change.key} found in initial table."
+
+    assert (
+        key_hash in updated_state
+    ), f"NewItem validation: Key {change.key} not found in final table."
 
     new_item = formatter(updated_state[key_hash])
 
     assert (
         new_item == change.item
-    ), f"NewItem validation: Key {change.key} does not match expected state. Expected {change.item}, Actual {new_item}."  # noqa
+    ), f"NewItem validation: Key {change.key} does not match expected structure. Expected {change.item}, got {new_item}."  # noqa
 
 
 def validate_updated_item_new_field(
@@ -101,15 +101,15 @@ def validate_updated_item_new_field(
     # check that the field is not already in the item
     assert (
         field.field not in initial_item
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been added, but already exists."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} expected to be added, but already exists in initial item."  # noqa
 
     assert (
         field.field in updated_item
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been added, but not found in updated item."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} expected to be added, but not found in final item."  # noqa
 
     assert (
         field.new_value == updated_item[field.field]
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been added, but does not match expected value."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} added, but does not match expected value."  # noqa
 
 
 def validate_updated_item_updated_field(
@@ -118,15 +118,15 @@ def validate_updated_item_updated_field(
     # check that the field is not already in the item
     assert (
         field.field in initial_item
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been updated, but not found in initial item."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} expected to be updated, but not found in initial item."  # noqa
 
     assert (
         field.field in updated_item
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been updated, but not found in updated item."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} expected to be updated, but not found in final item."  # noqa
 
     assert (
         field.new_value == updated_item[field.field]
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been updated, but does not match expected value. Expected '{field.new_value}', got '{updated_item[field.field]}'."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} updated, but does not match expected value. Expected '{field.new_value}', got '{updated_item[field.field]}'."  # noqa
 
 
 def validate_updated_item_removed_field(
@@ -135,11 +135,11 @@ def validate_updated_item_removed_field(
 
     assert (
         field.field in initial_item
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been removed, but not found in initial item."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} expected to be deleted, but not found in initial item."  # noqa
 
     assert (
         field.field not in updated_item
-    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} has been removed, but found in updated item."  # noqa
+    ), f"UpdateItem validation: Field '{field.field}' for key {update.key} expected to be deleted, but found in final item."  # noqa
 
 
 def validate_updated_item(
@@ -156,7 +156,7 @@ def validate_updated_item(
 
     assert (
         key_hash in updated_state
-    ), f"UpdatedItem validation: Key {change.key} not found in updated table."
+    ), f"UpdatedItem validation: Key {change.key} not found in final table."
 
     assert (
         key_hash in initial_state
@@ -191,11 +191,11 @@ def validate_updated_item(
 
         assert (
             key in updated_item
-        ), f"UpdatedItem validation: Field '{key}' for key {change.key} not found in updated item."  # noqa
+        ), f"UpdatedItem validation: Field '{key}' for key {change.key} not in changeset, but has been removed from final item."  # noqa
 
         assert (
             initial_item[key] == updated_item[key]
-        ), f"UpdatedItem validation: Field '{key}' for key {change.key} has been modified. Expected: {initial_item[key]}, Actual: {updated_item[key]}."  # noqa
+        ), f"UpdatedItem validation: Field '{key}' for key {change.key} not in changeset, but has been modified in final item. Expected: {initial_item[key]}, got: {updated_item[key]}."  # noqa
 
 
 def validate_deleted_item(
@@ -210,11 +210,11 @@ def validate_deleted_item(
 
     assert (
         key_hash in initial_state
-    ), f"DeletedItem validation: Key {change.key} not found in initial table."
+    ), f"DeletedItem validation: Key {change.key} expected to be deleted, but item not found in initial table."  # noqa
 
     assert (
         key_hash not in updated_state
-    ), f"DeletedItem validation: Key {change.key} found in updated table."  # noqa
+    ), f"DeletedItem validation: Key {change.key} expected to be deleted, but item found in final table."  # noqa
 
 
 def validate_unchanged_items(
@@ -253,7 +253,7 @@ def validate_unchanged_items(
         # check that the item has not been modified
         assert (
             initial_item == updated_item
-        ), f"Item {unhashed_key} found in updated table, but has been modified. Expected: {initial_item}, Actual: {updated_item}."  # noqa
+        ), f"Item {unhashed_key} not in changeset, but has been modified in final table. Expected: {initial_item}, got: {updated_item}."  # noqa
 
 
 def validate_new_items(
@@ -282,7 +282,7 @@ def validate_new_items(
         # assert that the new key is defined in the changeset
         assert (
             key_hash in changed_keys
-        ), f"New item {unhashed_key} found in updated table, but not in expected changeset."  # noqa
+        ), f"New item {unhashed_key} not in changeset, but has been found in final table."  # noqa
 
 
 @contextmanager
@@ -313,7 +313,16 @@ def validate_dynamodb_changeset(
     # in the changeset
     validate_new_items(table, initial_state, updated_state, expected_changeset)
 
+    pk, sk = get_key_fields_from_table(table)
+
     for change in expected_changeset.changes:
+        if pk not in change.key or sk not in change.key:
+            raise ValueError(
+                "Key for change is missing hash or sort key. "
+                "Ensure that the key for each change in the changeset "
+                "contains both the hash and sort key."
+            )
+
         if isinstance(change, PutItem):
             # check that the key is in the updated table
             validate_put_item(
