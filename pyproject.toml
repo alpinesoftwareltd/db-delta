@@ -5,10 +5,6 @@ readme = "README.md"
 
 dynamic = ["version"]
 
-# add project url
-Repository = "https://github.com/alpinesoftwareltd/db-delta.git"
-Homepage = "https://github.com/alpinesoftwareltd/db-delta"
-Documentation = "https://github.com/alpinesoftwareltd/db-delta/blob/main/README.md"
 
 authors = [
     { name = "Pascal Sauerborn", email = "pascal.sauerborn@gmail.com" }
@@ -19,6 +15,11 @@ dependencies = [
 	"moto",
 	"boto3"
 ]
+
+[project.urls]
+Repository = "https://github.com/alpinesoftwareltd/db-delta.git"
+Homepage = "https://github.com/alpinesoftwareltd/db-delta"
+Documentation = "https://github.com/alpinesoftwareltd/db-delta/blob/main/README.md"
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm>=8"]
