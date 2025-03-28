@@ -222,6 +222,7 @@ def validate_unchanged_items(
     initial_state: Dict[str, Dict[str, Any]],
     updated_state: Dict[str, Dict[str, Any]],
     changeset: ChangeSet,
+    formatter: Callable = lambda x: x,
 ):
 
     # get key schema fom dynamodb table
@@ -246,8 +247,8 @@ def validate_unchanged_items(
             key_hash in updated_state
         ), f"Expected key {unhashed_key} not found in updated table."
 
-        initial_item = initial_state[key_hash]
-        updated_item = updated_state[key_hash]
+        initial_item = formatter(initial_state[key_hash])
+        updated_item = formatter(updated_state[key_hash])
 
         # check that the item has not been modified
         assert (
@@ -305,10 +306,7 @@ def validate_dynamodb_changeset(
     # ensure that all items that are NOT present in changeset have remained
     # unchanged
     validate_unchanged_items(
-        table,
-        initial_state,
-        updated_state,
-        expected_changeset,
+        table, initial_state, updated_state, expected_changeset, formatter=formatter
     )
 
     # ensure that no new items have been created that are not present
