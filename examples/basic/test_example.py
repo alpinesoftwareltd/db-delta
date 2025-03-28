@@ -31,7 +31,9 @@ def example_function(table):
 
 
 def test_example(mock_dynamo_table):
+    # load changeset from local JSON file
     changeset = ChangeSet.from_json("sample_changeset.json")
+
     with validate_dynamodb_changeset(mock_dynamo_table, changeset):
-        # call some function here that uses the dynamodb table
+        # run function that executes DynamoDB operations
         example_function(mock_dynamo_table)

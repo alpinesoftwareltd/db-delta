@@ -76,8 +76,8 @@ def test_validate_dynamodb_changeset_put_item_failed(mock_dynamo_table):
                 }
             )
 
-    expected_error = """New item {'PK': 'ITEM_ID#7', 'SK': 'ITEM#7'} found in updated
- table, but not in expected changeset."""
+    expected_error = """New item {'PK': 'ITEM_ID#7', 'SK': 'ITEM#7'} not in changeset,
+ but has been found in final table."""
 
     assert str(exc.value) == expected_error.replace("\n", "")
 
@@ -158,10 +158,11 @@ def test_validate_dynamodb_changeset_updated_item_failed(mock_dynamo_table):
                 ExpressionAttributeValues={":name": "Item 1 Updated"},
             )
 
-    expected_error = """Item {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2'} found in updated table,
- but has been modified. Expected: {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2', 'name': 'Item 2',
- 'description': 'Description of item 2', 'price': Decimal('200')}, Actual: {'PK':
- 'ITEM_ID#2', 'SK': 'ITEM#2', 'name': 'Item 1 Updated', 'price': Decimal('200')}."""
+    expected_error = """Item {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2'} not in changeset, but
+ has been modified in final table. Expected: {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2',
+ 'name': 'Item 2', 'description': 'Description of item 2', 'price': Decimal('200')},
+ got: {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2', 'name': 'Item 1 Updated',
+ 'price': Decimal('200')}."""
 
     assert str(exc.value) == expected_error.replace("\n", "")
 
@@ -276,7 +277,7 @@ def test_validate_changeset_failed_put(mock_dynamo_table):
             )
 
     expected_error = """NewItem validation: Key {'PK': 'ITEM_ID#6', 'SK': 'ITEM#6'} not
- found in updated table."""
+ found in final table."""
 
     assert str(exc.value) == expected_error.replace("\n", "")
 
@@ -305,8 +306,8 @@ def test_validate_changeset_failed_update(mock_dynamo_table):
             )
 
     expected_error = """UpdateItem validation: Field 'name' for key {'PK': 'ITEM_ID#2',
- 'SK': 'ITEM#2'} has been updated, but does not match expected value. Expected 'Test 2
- Updated', got 'Item 2'."""
+ 'SK': 'ITEM#2'} updated, but does not match expected value. Expected 'Test 2 Updated',
+ got 'Item 2'."""
 
     assert str(exc.value) == expected_error.replace("\n", "")
 
@@ -338,7 +339,7 @@ def test_validate_changeset_failed_delete(mock_dynamo_table):
             )
 
     expected_error = """DeletedItem validation: Key {'PK': 'ITEM_ID#3', 'SK': 'ITEM#3'}
- found in updated table."""
+ expected to be deleted, but item found in final table."""
 
     assert str(exc.value) == expected_error.replace("\n", "")
 
@@ -360,8 +361,8 @@ def test_empty_changeset_inserted(mock_dynamo_table):
                 }
             )
 
-    expected_error = """New item {'PK': 'ITEM_ID#7', 'SK': 'ITEM#7'} found in updated
- table, but not in expected changeset."""
+    expected_error = """New item {'PK': 'ITEM_ID#7', 'SK': 'ITEM#7'} not in changeset,
+ but has been found in final table."""
 
     assert str(exc.value) == expected_error.replace("\n", "")
 
@@ -382,10 +383,10 @@ def test_empty_changeset_updated(mock_dynamo_table):
                 ExpressionAttributeValues={":name": "Test 2 Updated"},
             )
 
-    expected_error = """Item {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2'} found in updated
- table, but has been modified. Expected: {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2', 'name':
- 'Item 2', 'description': 'Description of item 2', 'price': Decimal('200')}, Actual:
- {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2', 'name': 'Test 2 Updated', 'description':
+    expected_error = """Item {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2'} not in changeset,
+ but has been modified in final table. Expected: {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2',
+ 'name': 'Item 2', 'description': 'Description of item 2', 'price': Decimal('200')},
+ got: {'PK': 'ITEM_ID#2', 'SK': 'ITEM#2', 'name': 'Test 2 Updated', 'description':
  'Description of item 2', 'price': Decimal('200')}."""
 
     assert str(exc.value) == expected_error.replace("\n", "")
